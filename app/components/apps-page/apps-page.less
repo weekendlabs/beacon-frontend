@@ -1,6 +1,7 @@
 div.apps.page {
 
-  div.ui.app.basic.segment {
+  div.ui.app.basic.segment,
+  form.ui.app.basic.segment {
     margin: 0.5em;
     margin-top: 0;
     min-width: 225px;
@@ -12,13 +13,37 @@ div.apps.page {
     background: #fefefe;
     border: 1px solid #CCCCCC;
 
-    .name {
+    .name,
+    .title {
       background: #232323;
       color: #fefefe;
       font-weight: bold;
       padding: 0.5em;
       text-align: center;
       font-size: 1.10em;
+    }
+  }
+
+  div.ui.app.basic.segment {
+    cursor: pointer;
+  }
+
+  form.ui.app.basic.segment {
+    .title {
+      background: #27ae60;
+    }
+
+    .inputs {
+      display: flex;
+      flex-direction: column;
+      margin-top: 1.5em;
+      padding: 1.0em;
+
+      input[type=submit] {
+        margin: auto;
+        margin-top: 0.5em;
+        width: 125px;
+      }
     }
   }
 }
