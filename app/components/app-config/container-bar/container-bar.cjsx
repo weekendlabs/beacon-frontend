@@ -4,6 +4,8 @@ React = require 'react/addons'
 
 {LinkedStateMixin} = React.addons
 
+Cluster = require '../../cluster/cluster'
+
 module.exports =
   React.createClass
     displayName: 'ContainerBar'
@@ -89,7 +91,7 @@ module.exports =
         data-container-name={container.name}
         onMouseDown={@_handleMouseDown}
       >
-        <img className="shape" src="images/plain_cube.gif" />
+        <Cluster drawBorder={false} type={container.name.toLowerCase().replace(/\./gi, '-')} />
         <div className="name">{container.name}</div>
       </div>
 

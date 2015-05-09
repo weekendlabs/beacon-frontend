@@ -6,6 +6,8 @@ App = require '../../data/apps'
 
 ContainerBar = require './container-bar/container-bar'
 
+Cluster = require '../cluster/cluster'
+
 module.exports =
   React.createClass
     displayName: 'AppConfig'
@@ -53,10 +55,12 @@ module.exports =
             </div>
 
             <div className="template-editor">
-
             </div>
           </div>
           <div className="sidebar">
+            <div className="settings">
+              <h4>Choose a container in the template to view details</h4>
+            </div>
             <ContainerBar className="container-bar" eventPool={@eventPool} />
           </div>
         </div>
