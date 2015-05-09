@@ -91,7 +91,7 @@ module.exports =
         data-container-name={container.name}
         onMouseDown={@_handleMouseDown}
       >
-        <Cluster drawBorder={false} type={container.name.toLowerCase().replace(/\./gi, '-')} />
+        <Cluster drawBorder={false} type={container.name} />
         <div className="name">{container.name}</div>
       </div>
 

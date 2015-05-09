@@ -14,15 +14,44 @@ module.exports =
 
     getInitialState: ->
       app: null
+      draggingCluster:
+        x: 0
+        y: 0
+        visible: false
+        clusterName: ''
+      clusters: []
 
     componentWillMount: ->
       @eventPool = K.pool()
+      @eventPool
+        .onValue((e) =>
+          @setState(
+            draggingCluster:
+              x: e.x
+              y: e.y
+              visible: if e.type is 'dragend' then false else true
+              containerName: e.containerName
+          )
+        )
+        .onValue((e) =>
+          if e.type is 'dragend'
+            newClusters = R.append(R.pick(['x', 'y', 'containerName'], e), @state.clusters)
+            @setState(clusters: newClusters)
+        )
 
     componentDidMount: ->
       App
         .getOne(@props.params.appid)
         .then (res) =>
           @setState(app: res.body)
+
+    _renderCluster: (cluster, i) ->
+      <Cluster
+        key={i}
+        x={cluster.x}
+        y={cluster.y}
+        type={cluster.containerName}
+      />
 
     render: ->
       unless @state.app?
@@ -55,6 +84,13 @@ module.exports =
             </div>
 
             <div className="template-editor">
+              {R.mapIndexed(@_renderCluster)(@state.clusters)}
+              <Cluster
+                type={@state.draggingCluster.containerName}
+                x={@state.draggingCluster.x}
+                y={@state.draggingCluster.y}
+                visible={@state.draggingCluster.visible}
+              />
             </div>
           </div>
           <div className="sidebar">
