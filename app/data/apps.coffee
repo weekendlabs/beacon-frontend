@@ -4,6 +4,12 @@ request = require 'superagent-bluebird-promise'
 # baseUrl = 'http://192.168.24.24:3000'
 baseUrl = 'http://localhost:3000'
 
+io = require('socket.io-client')(baseUrl)
+
+io.on 'connect', -> console.log 'connected'
+io.on 'container-event', (data) -> console.log data
+io.on 'stat', (data) -> console.log data
+
 getRandomArbitrary = (min, max) ->
     return Math.random() * (max - min) + min
 
