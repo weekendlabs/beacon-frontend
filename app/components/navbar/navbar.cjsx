@@ -6,6 +6,8 @@ module.exports =
     displayName: 'Navbar'
 
     render: ->
-      <div className="ui navbar menu">
-        <div className="header item">Beacon</div>
+      <div className="navbar">
+        <div className="ui fixed menu">
+          <div className="header item">Beacon</div>
+        </div>
       </div>
