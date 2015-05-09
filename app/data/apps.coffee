@@ -1,5 +1,6 @@
 request = require 'superagent-bluebird-promise'
 
+# baseUrl = 'http://192.168.24.24:3000'
 baseUrl = 'http://localhost:3000'
 
 getOne = (id) ->

@@ -27,7 +27,7 @@ module.exports =
       <div
         key={i}
         className={"container-cube #{type.toLowerCase().replace(/\./gi, '-')}"}
-        style={{opacity: if i isnt 0 then 0.5 else 1}}
+        style={{opacity: if i isnt 0 then 0.25 else 1}}
       />
 
     _handleClick: ->
@@ -66,7 +66,7 @@ module.exports =
         })
 
     render: ->
-      size = @props.containerCount * 3 + 6
+      size = (Math.floor(Math.sqrt(@props.containerCount - 1)) * 3) + 9
 
       <div
         className={"cluster-container #{if @props.selected then 'selected' else ''}"}

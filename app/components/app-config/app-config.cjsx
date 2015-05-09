@@ -116,7 +116,7 @@ module.exports =
         .then (res) =>
           console.log res
           console.log 'put new config finished'
-          # App.deploy(@state.app._id)
+          App.deploy(@state.app._id)
         .then (res) =>
           console.log res
 
