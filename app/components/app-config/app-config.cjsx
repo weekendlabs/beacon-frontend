@@ -8,6 +8,8 @@ ContainerBar = require './container-bar/container-bar'
 Cluster = require '../cluster/cluster'
 ClusterSettings = require '../cluster-settings/cluster-settings'
 
+actions = require '../../actions/actions'
+
 module.exports =
   React.createClass
     displayName: 'AppConfig'
@@ -45,6 +47,18 @@ module.exports =
         .getOne(@props.params.appid)
         .then (res) =>
           @setState(app: res.body)
+
+      actions.setNavbarChildren([
+        <div className="ui right menu" key="deploy-button">
+          <div className="item">
+            <div className="ui green button">Deploy</div>
+          </div>
+        </div>
+      ])
+
+    componentWillUnmount: ->
+      actions.removeNavbarChildren()
+
 
     _handleContainerClick: (id) ->
       @setState(selectedClusterId: id)
