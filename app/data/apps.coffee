@@ -8,6 +8,12 @@ getOne = (id) ->
 getAll = ->
   request.get("#{baseUrl}/apps")
 
+putConfig = (id, config) ->
+  console.log config
+  request
+    .put("#{baseUrl}/apps/#{id}")
+    .send(config: config)
+
 create = (appName) ->
   request
     .post("#{baseUrl}/apps")
@@ -16,5 +22,6 @@ create = (appName) ->
 module.exports = {
   getOne
   getAll
+  putConfig
   create
 }

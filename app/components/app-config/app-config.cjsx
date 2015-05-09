@@ -23,6 +23,7 @@ module.exports =
         clusterName: ''
       clusters: []
       selectedClusterId: -1
+      showDeployForm: false
 
     componentWillMount: ->
       @eventPool = K.pool()
@@ -46,12 +47,17 @@ module.exports =
       App
         .getOne(@props.params.appid)
         .then (res) =>
-          @setState(app: res.body)
+          console.log res.body
+          config = JSON.parse(res.body.config)
+          @setState(
+            app: res.body
+            clusters: if config.clusters? then config.clusters else []
+          )
 
       actions.setNavbarChildren([
         <div className="ui right menu" key="deploy-button">
           <div className="item">
-            <div className="ui green button">Deploy</div>
+            <div className="ui green button" onClick={@_handleDeployButtonClick}>Deploy</div>
           </div>
         </div>
       ])
@@ -59,9 +65,42 @@ module.exports =
     componentWillUnmount: ->
       actions.removeNavbarChildren()
 
+    _handleDeployButtonClick: ->
+      @setState(showDeployForm: true)
+
+    _handleDeployFormCancel: ->
+      @setState(showDeployForm: false)
 
     _handleContainerClick: (id) ->
       @setState(selectedClusterId: id)
+
+    _handleDeployFormSubmit: (e) ->
+      e.preventDefault()
+      accessKey = e.currentTarget['aws-access-key'].value
+      secretKey = e.currentTarget['aws-secret-key'].value
+
+      newConfig = R.merge( JSON.parse(@state.app.config or "{}"), {
+        aws:
+          accessKey: accessKey
+          secretKey: secretKey
+        clusters: R.map((cluster) ->
+          containerName: cluster.containerName
+          name: cluster.containerName
+          x: cluster.x
+          y: cluster.y
+          github:
+            url: 'https://github.com/lalith26/beacon-sample-app.git'
+            token: '594671659b92ca45afdb46d6c64402265a98a44e'
+          min: 1
+          max: 5
+        )(@state.clusters)
+      })
+
+      App
+        .putConfig(@state.app._id, newConfig)
+        .then (res) ->
+          console.log res
+          console.log 'put new config finished'
 
     _renderCluster: (cluster, i) ->
       <Cluster
@@ -95,7 +134,23 @@ module.exports =
             <h4>Drag and drop your containers to define clusters</h4>
           </div>
 
+        deployForm =
+          <div className={"deploy-form #{if @state.showDeployForm then 'visible' else ''}"}>
+            <form className="ui form basic segment" onSubmit={@_handleDeployFormSubmit}>
+              <h3>Deploy your clusters</h3>
+              <div className="ui input field">
+                <input name="aws-access-key" type="text" placeholder="AWS Access Key" defaultValue="AKIAIAAZ7VPUJCPVXWFQ" />
+              </div>
+              <div className="ui input field">
+                <input name="aws-secret-key" type="text" placeholder="AWS Secret Key" defaultValue="dA2kRk0N/wO33CByG3jfBPGibapubx9hxmIuvAw2" />
+              </div>
+              <input className="ui primary button" type="submit" />
+              <div className="ui default button" onClick={@_handleDeployFormCancel}>Cancel</div>
+            </form>
+          </div>
+
         <div className="ui app-config page basic segment">
+          {deployForm}
           <div className="main-view">
             <div className="ui steps">
               <div className="active step">
