@@ -1,7 +1,10 @@
+K = require 'kefir'
 R = require 'ramda'
 React = require 'react'
 
 App = require '../../data/apps'
+
+ContainerBar = require './container-bar/container-bar'
 
 module.exports =
   React.createClass
@@ -9,6 +12,9 @@ module.exports =
 
     getInitialState: ->
       app: null
+
+    componentWillMount: ->
+      @eventPool = K.pool()
 
     componentDidMount: ->
       App
@@ -51,6 +57,6 @@ module.exports =
             </div>
           </div>
           <div className="sidebar">
-
+            <ContainerBar className="container-bar" eventPool={@eventPool} />
           </div>
         </div>

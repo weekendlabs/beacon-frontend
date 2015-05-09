@@ -1,6 +1,6 @@
 request = require 'superagent-bluebird-promise'
 
-baseUrl = 'http://192.168.24.24:5000'
+baseUrl = 'http://localhost:3000'
 
 getOne = (id) ->
   request.get("#{baseUrl}/apps/#{id}")
