@@ -5,8 +5,8 @@ React = require 'react'
 App = require '../../data/apps'
 
 ContainerBar = require './container-bar/container-bar'
-
 Cluster = require '../cluster/cluster'
+ClusterSettings = require '../cluster-settings/cluster-settings'
 
 module.exports =
   React.createClass
@@ -64,6 +64,23 @@ module.exports =
       unless @state.app?
         <div className="ui app-config page basic loading segment" />
       else
+        settings =
+          if @state.selectedClusterId isnt -1
+            <div className="cluster-settings">
+              <ClusterSettings
+                cluster={@state.clusters[@state.selectedClusterId]}
+              />
+            </div>
+          else
+            <div className="ui basic cluster-settings disabled segment">
+              <h4>Cluster Settings</h4>
+            </div>
+
+        blankEditorMessage =
+          <div className="ui basic segment blank-message">
+            <h4>Drag and drop your containers to define clusters</h4>
+          </div>
+
         <div className="ui app-config page basic segment">
           <div className="main-view">
             <div className="ui steps">
@@ -89,9 +106,8 @@ module.exports =
                 </div>
               </div>
             </div>
-
             <div className="template-editor">
-              {R.mapIndexed(@_renderCluster)(@state.clusters)}
+              {unless R.isEmpty(@state.clusters) then R.mapIndexed(@_renderCluster)(@state.clusters) else blankEditorMessage}
               <Cluster
                 id={-1}
                 type={@state.draggingCluster.containerName}
@@ -102,9 +118,7 @@ module.exports =
             </div>
           </div>
           <div className="sidebar">
-            <div className="settings">
-              <h4>Choose a container in the template to view details</h4>
-            </div>
+            {settings}
             <ContainerBar className="container-bar" eventPool={@eventPool} />
           </div>
         </div>

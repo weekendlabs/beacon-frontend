@@ -14,8 +14,29 @@ div.app-config.page {
     }
 
     div.template-editor {
+      position: relative;
+      display: flex;
       flex: 1;
       overflow: auto;
+
+      div.blank-message {
+        display: flex;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-left: -0.5 * 650px;
+        margin-top: -0.5 * 450px;
+        width: 650px;
+        height: 450px;
+        border-radius: 10px;
+        border: 1px dashed #232323;
+        opacity: 0.5;
+
+        h4 {
+          margin: auto;
+          text-align: center;
+        }
+      }
     }
   }
 
@@ -27,7 +48,7 @@ div.app-config.page {
     max-width: 250px;
     background: #fefefe;
 
-    div.settings {
+    div.cluster-settings {
       display: flex;
       flex: 0.5;
 
@@ -35,6 +56,12 @@ div.app-config.page {
         margin: auto;
         padding: 1.5em;
         text-align: center;
+      }
+
+      form {
+        padding: 1em;
+
+        input {margin: 0;}
       }
     }
 
