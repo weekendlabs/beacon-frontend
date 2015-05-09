@@ -20,6 +20,7 @@ module.exports =
         visible: false
         clusterName: ''
       clusters: []
+      selectedClusterId: -1
 
     componentWillMount: ->
       @eventPool = K.pool()
@@ -36,7 +37,7 @@ module.exports =
         .onValue((e) =>
           if e.type is 'dragend'
             newClusters = R.append(R.pick(['x', 'y', 'containerName'], e), @state.clusters)
-            @setState(clusters: newClusters)
+            @setState(clusters: newClusters, selectedClusterId: (newClusters.length - 1))
         )
 
     componentDidMount: ->
@@ -45,12 +46,18 @@ module.exports =
         .then (res) =>
           @setState(app: res.body)
 
+    _handleContainerClick: (id) ->
+      @setState(selectedClusterId: id)
+
     _renderCluster: (cluster, i) ->
       <Cluster
         key={i}
+        id={i}
         x={cluster.x}
         y={cluster.y}
         type={cluster.containerName}
+        onClick={@_handleContainerClick}
+        selected={@state.selectedClusterId is i}
       />
 
     render: ->
@@ -86,6 +93,7 @@ module.exports =
             <div className="template-editor">
               {R.mapIndexed(@_renderCluster)(@state.clusters)}
               <Cluster
+                id={-1}
                 type={@state.draggingCluster.containerName}
                 x={@state.draggingCluster.x}
                 y={@state.draggingCluster.y}

@@ -19,8 +19,8 @@ module.exports =
 
     getDefaultProps: ->
       containers: [
-        {type: 'compute', name: 'io.js'}
         {type: 'compute', name: 'NodeJS'}
+        {type: 'compute', name: 'io.js'}
         {type: 'compute', name: 'Rails'}
         {type: 'compute', name: 'Ruby'}
         {type: 'compute', name: 'Nginx'}
@@ -84,14 +84,15 @@ module.exports =
         y: e.clientY
       })
 
-    _renderContainer: (container) ->
+    _renderContainer: (container, i) ->
       <div
         className="container"
         key={container.name}
+        id={i}
         data-container-name={container.name}
         onMouseDown={@_handleMouseDown}
       >
-        <Cluster drawBorder={false} type={container.name} />
+        <Cluster id={i} drawBorder={false} type={container.name} />
         <div className="name">{container.name}</div>
       </div>
 
@@ -111,6 +112,6 @@ module.exports =
           <i className="filter icon"></i>
         </div>
         <div className="containers-container">
-          {R.map(@_renderContainer)(@_getContainers(@props.containers, @state.textFilter))}
+          {R.mapIndexed(@_renderContainer)(@_getContainers(@props.containers, @state.textFilter))}
         </div>
       </div>

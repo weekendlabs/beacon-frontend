@@ -9,6 +9,11 @@
     width: 12em;
     -webkit-transform: rotateX(45deg) rotateZ(45deg);
     -webkit-transform-style: preserve-3d;
+
+    &.selected {
+      background-color: rgba(41, 128, 185, 0.25);
+      box-shadow: 0 0 0 .1em rgba(41, 128, 185, 1);
+    }
 }
 .container-cube,
 .container-cube:after,
@@ -34,7 +39,7 @@
     &.nodejs { background-image: url('../images/nodejs_logo.png'); }
     &.nginx { background-image: url('../images/nginx_logo.png'); }
     &.ruby { background-image: url('../images/ruby_logo.png'); }
-    &.ruby { background-image: url('../images/ruby_logo.png'); }
+    &.rails { background-image: url('../images/rails_logo.png'); }
     &.apache2 { background-image: url('../images/apache_logo.png'); }
     &.tomcat { background-image: url('../images/tomcat_logo.png'); }
     &.django { background-image: url('../images/django_logo.png'); }
