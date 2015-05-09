@@ -39,7 +39,14 @@ module.exports =
         )
         .onValue((e) =>
           if e.type is 'dragend'
-            newClusters = R.append(R.pick(['x', 'y', 'containerName'], e), @state.clusters)
+            newClusters = R.append(
+              R.merge(
+                R.pick(
+                  ['x', 'y', 'containerName'], e),
+                  {name: 'node', github: {url: '', token: ''}, min: 1, max: 1}
+                ),
+                @state.clusters
+              )
             @setState(clusters: newClusters, selectedClusterId: (newClusters.length - 1))
         )
 
@@ -74,6 +81,14 @@ module.exports =
     _handleContainerClick: (id) ->
       @setState(selectedClusterId: id)
 
+    _handleClusterChange: (i) -> (newCluster) =>
+      newClusters = R.compose(
+        R.insert(i, newCluster)
+        R.remove(i, 1)
+      )(@state.clusters)
+
+      @setState(clusters: newClusters)
+
     _handleDeployFormSubmit: (e) ->
       e.preventDefault()
       accessKey = e.currentTarget['aws-access-key'].value
@@ -85,22 +100,25 @@ module.exports =
           secretKey: secretKey
         clusters: R.map((cluster) ->
           containerName: cluster.containerName
-          name: cluster.containerName
+          name: 'node'
           x: cluster.x
           y: cluster.y
           github:
             url: 'https://github.com/lalith26/beacon-sample-app.git'
             token: '594671659b92ca45afdb46d6c64402265a98a44e'
-          min: 1
-          max: 5
+          min: cluster.min
+          max: cluster.max
         )(@state.clusters)
       })
 
       App
         .putConfig(@state.app._id, newConfig)
-        .then (res) ->
+        .then (res) =>
           console.log res
           console.log 'put new config finished'
+          # App.deploy(@state.app._id)
+        .then (res) =>
+          console.log res
 
     _renderCluster: (cluster, i) ->
       <Cluster
@@ -111,6 +129,7 @@ module.exports =
         type={cluster.containerName}
         onClick={@_handleContainerClick}
         selected={@state.selectedClusterId is i}
+        containerCount={cluster.max}
       />
 
     render: ->
@@ -122,6 +141,7 @@ module.exports =
             <div className="cluster-settings">
               <ClusterSettings
                 cluster={@state.clusters[@state.selectedClusterId]}
+                onChange={@_handleClusterChange(@state.selectedClusterId)}
               />
             </div>
           else

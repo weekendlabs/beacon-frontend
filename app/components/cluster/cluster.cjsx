@@ -24,7 +24,11 @@ module.exports =
       selected: false
 
     _renderContainerCube: R.curry (type, i) ->
-      <div key={i} className={"container-cube #{type.toLowerCase().replace(/\./gi, '-')}"} />
+      <div
+        key={i}
+        className={"container-cube #{type.toLowerCase().replace(/\./gi, '-')}"}
+        style={{opacity: if i isnt 0 then 0.5 else 1}}
+      />
 
     _handleClick: ->
       if @props.onClick? then @props.onClick(@props.id)
