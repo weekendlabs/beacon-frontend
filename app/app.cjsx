@@ -1,5 +1,7 @@
-console.log 'hello world'
-
 React = require 'react'
+Router = require 'react-router'
 
-React.render <h3>Hello World</h3>, document.body
+routes = require './routes'
+
+Router.run routes, (Handler) ->
+  React.render <Handler />, document.body
