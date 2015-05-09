@@ -24,6 +24,9 @@ module.exports =
       clusters: []
       selectedClusterId: -1
       showDeployForm: false
+      deploying: false
+      deployed: false
+      runningContainers: 0
 
     componentWillMount: ->
       @eventPool = K.pool()
@@ -64,17 +67,14 @@ module.exports =
             clusters: if config.clusters? then config.clusters else []
           )
 
-      actions.setNavbarChildren([
-        <div className="ui right menu" key="deploy-button">
-          <div className="item">
-            <div className="ui green button" onClick={@_handleDeployButtonClick}>Deploy</div>
-          </div>
-        </div>
-      ])
+      App
+        .containerEventStream()
+        .onValue (val) =>
+          if val.status is 'start' then @setState(runningContainers: @state.runningContainers + 1)
+          else if val.status is 'stop' then @setState(runningContainers: @state.runningContainers - 1) 
 
     componentWillUnmount: ->
       @keyStream.offValue(@_handleDeleteKey)
-      actions.removeNavbarChildren()
 
     _handleDeleteKey: (e) ->
       if e.keyCode is 8 or e.keyCode is 46
@@ -121,6 +121,8 @@ module.exports =
         )(@state.clusters)
       })
 
+      @setState(deploying: true)
+
       App
         .putConfig(@state.app._id, newConfig)
         .then (res) =>
@@ -129,6 +131,7 @@ module.exports =
           App.deploy(@state.app._id)
         .then (res) =>
           console.log res
+          @setState(deploying: false, showDeployForm: false, deployed: true, runningContainers: 1)
 
     _renderCluster: (cluster, i) ->
       <Cluster
@@ -140,6 +143,7 @@ module.exports =
         onClick={@_handleContainerClick}
         selected={@state.selectedClusterId is i}
         containerCount={cluster.max}
+        runningContainers={@state.runningContainers}
       />
 
     render: ->
@@ -166,7 +170,7 @@ module.exports =
 
         deployForm =
           <div className={"deploy-form #{if @state.showDeployForm then 'visible' else ''}"}>
-            <form className="ui form basic segment" onSubmit={@_handleDeployFormSubmit}>
+            <form className={"ui form basic #{if @state.deploying then 'loading' else ''} segment"} onSubmit={@_handleDeployFormSubmit}>
               <h3>Deploy your clusters</h3>
               <div className="ui input field">
                 <input name="aws-access-key" type="text" placeholder="AWS Access Key" defaultValue="AKIAIAAZ7VPUJCPVXWFQ" />
@@ -182,28 +186,13 @@ module.exports =
         <div className="ui app-config page basic segment">
           {deployForm}
           <div className="main-view">
-            <div className="ui steps">
-              <div className="active step">
-                <i className="cube icon" />
-                <div className="content">
-                  <div className="title">App template</div>
-                  <div className="description">Choose the containers and the stack you want to build</div>
-                </div>
+            <div className="ui basic title segment">
+              <i className="cube icon" />
+              <div className="content">
+                <div className="title">Create App Template</div>
+                <div className="description">Drag and drop container to create clusters</div>
               </div>
-              <div className="disabled step">
-                <i className="cloud icon" />
-                <div className="content">
-                  <div className="title">Deploy Settings</div>
-                  <div className="description">Provide additional details for deploying your app</div>
-                </div>
-              </div>
-              <div className="disabled step">
-                <i className="dashboard icon" />
-                <div className="content">
-                  <div className="title">Monitor</div>
-                  <div className="description">Monitor your cluster and aggregated statistics</div>
-                </div>
-              </div>
+              <div className="ui green deploy button" onClick={@_handleDeployButtonClick}>Deploy</div>
             </div>
             <div className="template-editor">
               {unless R.isEmpty(@state.clusters) then R.mapIndexed(@_renderCluster)(@state.clusters) else blankEditorMessage}

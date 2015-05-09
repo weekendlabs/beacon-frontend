@@ -15,6 +15,7 @@ module.exports =
       y: React.PropTypes.number
       onClick: React.PropTypes.func
       selected: React.PropTypes.bool
+      runningContainers: React.PropTypes.number
 
     getDefaultProps: ->
       drawBorder: true
@@ -22,12 +23,13 @@ module.exports =
       type: ''
       visible: true
       selected: false
+      runningContainers: 1
 
-    _renderContainerCube: R.curry (type, i) ->
+    _renderContainerCube: R.curry (type, runningContainers, i) ->
       <div
         key={i}
         className={"container-cube #{type.toLowerCase().replace(/\./gi, '-')}"}
-        style={{opacity: if i isnt 0 then 0.25 else 1}}
+        style={{opacity: if i isnt 0 and i > runningContainers - 1 then 0.25 else 1}}
       />
 
     _handleClick: ->
@@ -73,5 +75,5 @@ module.exports =
         style={@_getClusterContainerStyle(size)}
         onClick={@_handleClick}
         >
-        {R.times(@_renderContainerCube(@props.type))(@props.containerCount)}
+        {R.times(@_renderContainerCube(@props.type, @props.runningContainers))(@props.containerCount)}
       </div>

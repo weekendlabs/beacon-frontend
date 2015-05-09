@@ -1,14 +1,29 @@
 K = require 'kefir'
+R = require 'ramda'
 request = require 'superagent-bluebird-promise'
 
-# baseUrl = 'http://192.168.24.24:3000'
-baseUrl = 'http://localhost:3000'
+baseUrl = 'http://192.168.24.24:3000'
+#baseUrl = 'http://localhost:3000'
 
 io = require('socket.io-client')(baseUrl)
+runningContainers = []
 
 io.on 'connect', -> console.log 'connected'
-io.on 'container-event', (data) -> console.log data
-io.on 'stat', (data) -> console.log data
+
+socketContainerEventStream = K.stream((emitter) ->
+  io.on 'container-event', (data) ->
+    emitter.emit(data)
+    runningContainers =
+      if data.status is 'start' then R.append(data.id, runningContainers)
+      else if data.status is 'stop' then R.remove(R.findIndex(R.propEq('id', data.id)), 1, runningContainers)
+      else runningContainers
+)
+
+socketStatsStream = K.stream((emitter) ->
+  io.on 'stat', (data) ->
+    console.log data
+    emitter.emit(data)
+)
 
 getRandomArbitrary = (min, max) ->
     return Math.random() * (max - min) + min
@@ -34,11 +49,10 @@ deploy = (id) ->
     .post("#{baseUrl}/deploy/#{id}")
 
 statsStream = (id) ->
-  K.fromPoll(1000, ->
-    m: getRandomArbitrary(20, 50)
-    n: "#{getRandomArbitrary(0, 1024).toFixed()}k"
-    c: getRandomArbitrary(30, 50)
-  )
+  socketStatsStream
+
+containerEventStream = (id) ->
+  socketContainerEventStream
 
 module.exports = {
   getOne
@@ -47,4 +61,5 @@ module.exports = {
   create
   deploy
   statsStream
+  containerEventStream
 }

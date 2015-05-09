@@ -52,9 +52,28 @@ div.app-config.page {
 
     border-right: 1px solid #CCCCCC;
 
-    div.ui.steps {
+    div.basic.title.segment {
+      display: flex;
       width: 100%;
-      border-radius: 0;
+      flex-direction: row;
+      background: #efefef;
+
+      i {
+        font-size: 2.5em;
+        margin-left: 0.5em;
+        margin-right: 0.5em;
+      }
+
+      div.content {
+        flex: 1;
+
+        div.title {
+          font-weight: bold;
+        }
+      }
+
+      div.deploy.button {
+      }
     }
 
     div.template-editor {
