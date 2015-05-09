@@ -70,6 +70,12 @@ gulp.task('vendor', ->
     .pipe gulp.dest targetDirectory() + '/vendor'
 )
 
+gulp.task('images', ->
+  gulp
+    .src './app/images/**'
+    .pipe gulp.dest targetDirectory() + '/images'
+)
+
 gulp.task('serve', ->
   connect.server(
     root: "#{__dirname}/#{targetDirectory()}"
@@ -87,7 +93,7 @@ gulp.task('clean', (done) ->
   rimraf './build', (-> rimraf './public', done)
 )
 
-gulp.task('assets', ['html', 'browserify', 'less', 'vendor'])
+gulp.task('assets', ['html', 'browserify', 'less', 'vendor', 'images'])
 
 gulp.task('prod', -> PROD_MODE = true)
 gulp.task('dev', -> PROD_MODE = false)
