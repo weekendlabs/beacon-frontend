@@ -50,6 +50,9 @@ module.exports =
             @setState(clusters: newClusters, selectedClusterId: (newClusters.length - 1))
         )
 
+      @keyStream = K.fromEvents(window, 'keydown')
+      @keyStream.onValue(@_handleDeleteKey)
+
     componentDidMount: ->
       App
         .getOne(@props.params.appid)
@@ -70,7 +73,14 @@ module.exports =
       ])
 
     componentWillUnmount: ->
+      @keyStream.offValue(@_handleDeleteKey)
       actions.removeNavbarChildren()
+
+    _handleDeleteKey: (e) ->
+      if e.keyCode is 8 or e.keyCode is 46
+        e.preventDefault()
+        newClusters = R.remove(@state.selectedClusterId, 1, @state.clusters)
+        @setState(clusters: newClusters, selectedClusterId: -1)
 
     _handleDeployButtonClick: ->
       @setState(showDeployForm: true)
